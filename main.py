@@ -111,13 +111,24 @@ def update_patient(patient_id : str, patient:PatientUpdate):
         existing_patient[key] = values
     
     existing_patient['id']= patient_id
-    updated = PatientUpdate(**existing_patient)
+    updated = Patient(**existing_patient)
     existing_patient = updated.model_dump(exclude='id')
     data[patient_id]= existing_patient
 
     save_data(data)
     return JSONResponse(status_code=200,content={'mesage':'Patient Updated'})
 
+
+@app.delete('/delete/{patient_id}')
+def patient_delete(patient_id:str):
+
+    data = load_data()
+    if patient_id not in data:
+        raise HTTPException(status_code=404,detail='Patient doesnt exist')
+    
+    del data[patient_id]
+    save_data(data)
+    return JSONResponse(status_code=200,content={'message':'Patient deleted'})
 
 
 
